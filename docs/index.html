@@ -644,9 +644,202 @@
         }
         .footer-ack a:hover { color: var(--berry-glow); }
 
+        /* ---- API / CLI Reference ---- */
+        .ref-section { padding: 5rem 0; }
+        .ref-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-top: 1.5rem;
+        }
+        .ref-table th {
+            background: var(--surface);
+            padding: 0.85rem 1.25rem;
+            text-align: left;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+        .ref-table td {
+            padding: 0.7rem 1.25rem;
+            font-size: 0.88rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+            vertical-align: top;
+        }
+        .ref-table tr:last-child td { border-bottom: none; }
+        .ref-table tr:hover td { background: rgba(123,63,160,0.04); }
+        .ref-table code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            color: var(--berry-glow);
+            background: rgba(123,63,160,0.08);
+            padding: 0.12rem 0.4rem;
+            border-radius: 4px;
+        }
+        .ref-table .param-name {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--berry-glow);
+            font-size: 0.84rem;
+            white-space: nowrap;
+        }
+        .ref-table .param-type {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--leaf-light);
+            font-size: 0.78rem;
+        }
+        .ref-fn-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            color: var(--berry-glow);
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.6rem 1.2rem;
+            display: inline-block;
+            margin-bottom: 0.75rem;
+        }
+        .ref-fn-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            max-width: 700px;
+        }
+        .subcmd-group { margin-bottom: 3rem; }
+        .subcmd-group:last-child { margin-bottom: 0; }
+        .subcmd-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .subcmd-title .subcmd-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.55rem;
+            border-radius: 5px;
+            background: rgba(123,63,160,0.15);
+            color: var(--berry-glow);
+            font-family: 'DM Sans', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ---- FAQ ---- */
+        .faq-section { padding: 5rem 0; }
+        .faq-list { max-width: 760px; }
+        .faq-item {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+            background: var(--bg-card);
+            transition: border-color 0.2s;
+        }
+        .faq-item:hover { border-color: var(--border-glow); }
+        .faq-q {
+            padding: 1.1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text);
+            user-select: none;
+        }
+        .faq-q .faq-arrow {
+            transition: transform 0.3s;
+            color: var(--text-dim);
+            flex-shrink: 0;
+            margin-left: 1rem;
+        }
+        .faq-item.open .faq-q .faq-arrow { transform: rotate(180deg); }
+        .faq-a {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease, padding 0.35s ease;
+            padding: 0 1.5rem;
+        }
+        .faq-item.open .faq-a {
+            max-height: 300px;
+            padding: 0 1.5rem 1.25rem;
+        }
+        .faq-a p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        /* ---- Back to top ---- */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--berry);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 90;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+            transition: opacity 0.3s, transform 0.3s, background 0.2s;
+            box-shadow: 0 4px 20px rgba(123,63,160,0.35);
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+        .back-to-top:hover {
+            background: var(--berry-light);
+            transform: translateY(-2px);
+        }
+
+        /* ---- Mobile hamburger ---- */
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: var(--text);
+        }
+        .hamburger svg { display: block; }
+
         /* ---- Responsive ---- */
         @media (max-width: 768px) {
-            .nav-links { gap: 1rem; }
+            .hamburger { display: block; }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 64px;
+                left: 0; right: 0;
+                background: rgba(11, 6, 20, 0.96);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 1.5rem 2rem;
+                gap: 1.25rem;
+                border-bottom: 1px solid var(--border);
+            }
+            .nav-links.open { display: flex; }
             .hero { padding: 8rem 0 4rem; }
             .hero-logo { width: 90px; height: 90px; }
             .features-grid { grid-template-columns: 1fr; }
@@ -654,6 +847,8 @@
             .pipeline-arrow { transform: rotate(90deg); }
             .code-block { padding: 1.25rem; }
             .output-tree { padding: 1.25rem; }
+            .ref-table { font-size: 0.82rem; }
+            .ref-table th, .ref-table td { padding: 0.6rem 0.75rem; }
         }
 
         /* ---- Scroll animations ---- */
@@ -680,10 +875,15 @@
             <img src="assets/logo.png" alt="DocBerry">
             DocBerry
         </a>
+        <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
         <ul class="nav-links">
             <li><a href="#features">Features</a></li>
             <li><a href="#quickstart">Quick Start</a></li>
-            <li><a href="#enrichment">Enrichment</a></li>
+            <li><a href="#api-reference">API</a></li>
+            <li><a href="#cli-reference">CLI</a></li>
+            <li><a href="#faq">FAQ</a></li>
             <li><a href="https://github.com/aj-das-research/docberry" class="btn-sm">GitHub</a></li>
         </ul>
     </div>
@@ -784,6 +984,25 @@
             </div>
         </div>
 
+        <!-- Segmentation 2-col detail -->
+        <div class="showcase-item reveal">
+            <div class="showcase-text">
+                <span class="showcase-tag tag-segment">Segmentation</span>
+                <h3>Two-Column Detection</h3>
+                <p>
+                    Interior pages with pure two-column text are split into left
+                    and right segments. Equations and section headings that sit within
+                    a column are kept with their column. The algorithm handles narrow
+                    gutters, mixed single/double regions, and figures that span one
+                    or both columns.
+                </p>
+            </div>
+            <div class="showcase-image">
+                <img src="assets/example-segmentation-2col.png" alt="Two-column page detection" loading="lazy">
+                <span class="img-label">Page 3 &mdash; Pure two-column body with equations</span>
+            </div>
+        </div>
+
         <!-- Tables -->
         <div class="showcase-item reveal">
             <div class="showcase-text">
@@ -817,6 +1036,24 @@
             <div class="showcase-image">
                 <img src="assets/example-figure.png" alt="Extracted multi-panel figure" loading="lazy">
                 <span class="img-label">Figure 2 &mdash; Pipeline diagram extracted with full fidelity</span>
+            </div>
+        </div>
+
+        <!-- Composite figure -->
+        <div class="showcase-item reveal">
+            <div class="showcase-text">
+                <span class="showcase-tag tag-figure">Figure Extraction</span>
+                <h3>Complex Composite Figures</h3>
+                <p>
+                    Even complex full-page composite figures with tables, scatter
+                    plots, density charts, heatmaps, and confusion matrices are
+                    captured as a single unified asset. Captions are preserved
+                    and saved alongside the image files.
+                </p>
+            </div>
+            <div class="showcase-image">
+                <img src="assets/example-figure-full.png" alt="Complex composite figure with multiple chart types" loading="lazy">
+                <span class="img-label">Figure 3 &mdash; Table + charts + heatmaps in one composite</span>
             </div>
         </div>
 
@@ -979,6 +1216,299 @@ result = <span class="fn">convert_document</span>(
     </div>
 </section>
 
+<!-- ============ API REFERENCE ============ -->
+<section id="api-reference" class="ref-section reveal">
+    <div class="container">
+        <div class="section-label">Python API</div>
+        <h2>API Reference</h2>
+        <p class="section-desc">The two main functions you&rsquo;ll use.</p>
+
+        <div class="subcmd-group">
+            <div class="ref-fn-name">convert_document(...) &rarr; ConversionResult</div>
+            <p class="ref-fn-desc">
+                Convert a document to Markdown or JSON with optional asset extraction.
+                This is the main entry point for DocBerry.
+            </p>
+            <table class="ref-table">
+                <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr>
+                        <td class="param-name">source</td>
+                        <td class="param-type">str</td>
+                        <td>&mdash;</td>
+                        <td>Path to a local file or a URL to convert.</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">output_dir</td>
+                        <td class="param-type">str | None</td>
+                        <td><code>None</code></td>
+                        <td>Output directory. Defaults to <code>&lt;source_stem&gt;_output/</code> next to the source.</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">output_format</td>
+                        <td class="param-type">str</td>
+                        <td><code>"markdown"</code></td>
+                        <td><code>"markdown"</code> or <code>"json"</code>.</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">extract_assets</td>
+                        <td class="param-type">bool</td>
+                        <td><code>True</code></td>
+                        <td>Extract tables, figures, and equations as separate image files.</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">layout_model</td>
+                        <td class="param-type">str</td>
+                        <td><code>"heron"</code></td>
+                        <td>Docling layout model. Options: <code>"heron"</code>, <code>"egret-medium"</code>, <code>"egret-large"</code>, <code>"egret-xlarge"</code>.</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">pipeline</td>
+                        <td class="param-type">str</td>
+                        <td><code>"standard"</code></td>
+                        <td>Conversion pipeline: <code>"standard"</code> or <code>"vlm"</code>.</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">equation_enrichment</td>
+                        <td class="param-type">str</td>
+                        <td><code>"none"</code></td>
+                        <td>LaTeX extraction method: <code>"none"</code>, <code>"pix2tex"</code>, <code>"qwen"</code>, or <code>"docling"</code>.</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">auto_segment</td>
+                        <td class="param-type">bool</td>
+                        <td><code>False</code></td>
+                        <td>Segment the PDF for reading order before conversion.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="subcmd-group" style="margin-top:3rem;">
+            <div class="ref-fn-name">segment_pdf(...) &rarr; List[Segment]</div>
+            <p class="ref-fn-desc">
+                Segment a PDF into reading-order regions. Detects full-width headers, two-column body,
+                and spanning figures/tables, then writes each region as a separate page.
+            </p>
+            <table class="ref-table">
+                <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr>
+                        <td class="param-name">input_pdf</td>
+                        <td class="param-type">str</td>
+                        <td>&mdash;</td>
+                        <td>Path to the source PDF file.</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">output_pdf</td>
+                        <td class="param-type">str</td>
+                        <td><code>"segmented_output.pdf"</code></td>
+                        <td>Path for the segmented output PDF.</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">page_spec</td>
+                        <td class="param-type">str | None</td>
+                        <td><code>None</code></td>
+                        <td>Page range (0-based), e.g. <code>"0,2-4"</code>. All pages if <code>None</code>.</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">debug_dir</td>
+                        <td class="param-type">str | None</td>
+                        <td><code>None</code></td>
+                        <td>Directory for debug overlay images (requires <code>docberry[debug]</code>).</td>
+                    </tr>
+                    <tr>
+                        <td class="param-name">config</td>
+                        <td class="param-type">LayoutConfig | None</td>
+                        <td><code>None</code></td>
+                        <td>Layout tuning parameters. Uses defaults if <code>None</code>.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="subcmd-group" style="margin-top:3rem;">
+            <div class="ref-fn-name">ConversionResult</div>
+            <p class="ref-fn-desc">
+                Dataclass returned by <code>convert_document()</code>.
+            </p>
+            <table class="ref-table">
+                <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td class="param-name">markdown_path</td><td class="param-type">Path | None</td><td>Path to the generated Markdown file.</td></tr>
+                    <tr><td class="param-name">json_path</td><td class="param-type">Path | None</td><td>Path to the generated JSON file.</td></tr>
+                    <tr><td class="param-name">output_dir</td><td class="param-type">Path | None</td><td>Output directory containing all results.</td></tr>
+                    <tr><td class="param-name">tables</td><td class="param-type">int</td><td>Number of tables extracted.</td></tr>
+                    <tr><td class="param-name">figures</td><td class="param-type">int</td><td>Number of figures extracted.</td></tr>
+                    <tr><td class="param-name">equations</td><td class="param-type">int</td><td>Number of equations extracted.</td></tr>
+                    <tr><td class="param-name">elapsed_seconds</td><td class="param-type">float</td><td>Total processing time in seconds.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- ============ CLI REFERENCE ============ -->
+<section id="cli-reference" class="ref-section reveal">
+    <div class="container">
+        <div class="section-label">Command Line</div>
+        <h2>CLI Reference</h2>
+        <p class="section-desc">Three subcommands for every workflow.</p>
+
+        <div class="subcmd-group">
+            <div class="subcmd-title">
+                <code>docberry convert</code>
+                <span class="subcmd-badge">Main</span>
+            </div>
+            <table class="ref-table">
+                <thead><tr><th>Flag</th><th>Default</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td class="param-name">source</td><td>&mdash;</td><td>Path or URL of the document to convert.</td></tr>
+                    <tr><td class="param-name">-o, --output-dir</td><td>auto</td><td>Output directory.</td></tr>
+                    <tr><td class="param-name">--format</td><td><code>markdown</code></td><td>Output format: <code>markdown</code> or <code>json</code>.</td></tr>
+                    <tr><td class="param-name">--extract-assets</td><td>off</td><td>Extract tables, figures, equations as images.</td></tr>
+                    <tr><td class="param-name">--auto-segment</td><td>off</td><td>Segment for reading order first.</td></tr>
+                    <tr><td class="param-name">--layout-model</td><td><code>heron</code></td><td>Layout model: <code>heron</code>, <code>egret-medium</code>, <code>egret-large</code>, <code>egret-xlarge</code>.</td></tr>
+                    <tr><td class="param-name">--pipeline</td><td><code>standard</code></td><td>Pipeline: <code>standard</code> or <code>vlm</code>.</td></tr>
+                    <tr><td class="param-name">--equation-enrichment</td><td><code>none</code></td><td>LaTeX method: <code>none</code>, <code>pix2tex</code>, <code>qwen</code>, <code>docling</code>.</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="subcmd-group">
+            <div class="subcmd-title">
+                <code>docberry segment</code>
+                <span class="subcmd-badge">Layout</span>
+            </div>
+            <table class="ref-table">
+                <thead><tr><th>Flag</th><th>Default</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td class="param-name">input</td><td>&mdash;</td><td>Input PDF path.</td></tr>
+                    <tr><td class="param-name">-o, --output</td><td><code>segmented_output.pdf</code></td><td>Output segmented PDF path.</td></tr>
+                    <tr><td class="param-name">--pages</td><td>all</td><td>Page spec, 0-based (e.g. <code>0,2-4</code>).</td></tr>
+                    <tr><td class="param-name">--debug-dir</td><td>&mdash;</td><td>Directory for debug overlay images.</td></tr>
+                    <tr><td class="param-name">--line-merge-gap</td><td><code>3.0</code></td><td>Gap to merge text lines vertically.</td></tr>
+                    <tr><td class="param-name">--band-merge-gap</td><td><code>14.0</code></td><td>Gap to merge adjacent bands.</td></tr>
+                    <tr><td class="param-name">--single-coverage-threshold</td><td><code>0.68</code></td><td>X-coverage to classify a band as single-column.</td></tr>
+                    <tr><td class="param-name">--min-side-coverage</td><td><code>0.55</code></td><td>Min occupancy to consider a column side active.</td></tr>
+                    <tr><td class="param-name">--min-center-gap-ratio</td><td><code>0.08</code></td><td>Min center gap ratio for double-column detection.</td></tr>
+                    <tr><td class="param-name">--caption-merge-gap</td><td><code>35.0</code></td><td>Max gap to merge a caption into its figure/table.</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="subcmd-group">
+            <div class="subcmd-title">
+                <code>docberry download-models</code>
+                <span class="subcmd-badge">Setup</span>
+            </div>
+            <table class="ref-table">
+                <thead><tr><th>Flag</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td class="param-name">--all</td><td>Download all model weights (Docling + pix2tex + Qwen).</td></tr>
+                    <tr><td class="param-name">--pix2tex</td><td>Download pix2tex model weights only (~100 MB).</td></tr>
+                    <tr><td class="param-name">--qwen</td><td>Download Qwen3.5-0.8B model weights (~1.6 GB).</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section id="faq" class="faq-section reveal">
+    <div class="container">
+        <div class="section-label">Questions</div>
+        <h2>Frequently Asked Questions</h2>
+        <p class="section-desc" style="margin-bottom:2.5rem;">Common questions about DocBerry.</p>
+
+        <div class="faq-list">
+            <div class="faq-item">
+                <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+                    Does DocBerry work on single-column papers?
+                    <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-a">
+                    <p>Yes. The segmentation step detects whether pages are single or multi-column.
+                    Single-column pages pass through without modification. You can also skip segmentation
+                    entirely by omitting <code>--auto-segment</code>.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+                    Is a GPU required?
+                    <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-a">
+                    <p>No. The core pipeline (segmentation + conversion + asset extraction) runs on CPU.
+                    However, equation enrichment with <code>qwen</code> or <code>docling</code> benefits significantly
+                    from a GPU. The <code>pix2tex</code> backend is lightweight and runs fine on CPU.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+                    What file formats are supported as input?
+                    <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-a">
+                    <p>DocBerry supports all formats that Docling supports: PDF, DOCX, HTML, PPTX,
+                    and images. The segmentation feature is specific to PDFs. For other formats,
+                    use <code>convert_document()</code> without <code>auto_segment</code>.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+                    What DPI are extracted images?
+                    <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-a">
+                    <p>All images (tables, figures, equations) are extracted at 900 DPI in three formats:
+                    PNG, PDF, and SVG. This ensures sharp rendering even when zooming in.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+                    Which equation enrichment backend should I use?
+                    <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-a">
+                    <p>For quick results with simple equations, use <code>pix2tex</code> (~1 sec/eq, ~100 MB).
+                    For complex notation with subscripts and matrices, use <code>qwen</code> (~3 sec/eq, ~1.6 GB).
+                    For highest quality with Docling&rsquo;s built-in VLM, use <code>docling</code> (~5 sec/eq, ~2 GB).
+                    If you just need equation images without LaTeX, use <code>none</code>.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+                    Can I use only segmentation without conversion?
+                    <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-a">
+                    <p>Yes. Use <code>docberry segment paper.pdf -o segmented.pdf</code> on the CLI
+                    or <code>segment_pdf("paper.pdf")</code> in Python. The segmented PDF can then
+                    be fed into any other tool that expects proper reading order.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+                    How do I tune segmentation for a specific layout?
+                    <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="faq-a">
+                    <p>Use <code>--debug-dir overlays/</code> to visualize detected segments. Then adjust
+                    parameters like <code>--single-coverage-threshold</code>, <code>--min-center-gap-ratio</code>,
+                    or <code>--caption-merge-gap</code> via the CLI or a <code>LayoutConfig</code> object in Python.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- ============ OUTPUT STRUCTURE ============ -->
 <section class="output-section reveal">
     <div class="container" style="display:flex;gap:4rem;align-items:center;flex-wrap:wrap;">
@@ -1011,6 +1541,11 @@ result = <span class="fn">convert_document</span>(
         </div>
     </div>
 </section>
+
+<!-- ============ BACK TO TOP ============ -->
+<button class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
 
 <!-- ============ FOOTER ============ -->
 <footer>
@@ -1056,8 +1591,20 @@ const observer = new IntersectionObserver((entries) => {
         }
     });
 }, { threshold: 0.1 });
-
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Back to top button
+const btt = document.querySelector('.back-to-top');
+window.addEventListener('scroll', () => {
+    btt.classList.toggle('visible', window.scrollY > 600);
+}, { passive: true });
+
+// Close mobile nav when clicking a link
+document.querySelectorAll('.nav-links a').forEach(a => {
+    a.addEventListener('click', () => {
+        document.querySelector('.nav-links').classList.remove('open');
+    });
+});
 </script>
 
 </body>
