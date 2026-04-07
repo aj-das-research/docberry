@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "docberry"
+version = "0.1.0"
+description = "Extract structured Markdown, tables, figures, and equations from scientific PDFs with proper reading order."
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "DocBerry Contributors" }]
+keywords = ["pdf", "markdown", "scientific-papers", "table-extraction", "equation-extraction", "docling"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Text Processing :: Markup :: LaTeX",
+]
+
+dependencies = [
+    "docling>=2.0",
+    "docling-core>=2.0",
+    "Pillow>=10.0",
+    "pandas>=2.0",
+    "PyMuPDF>=1.24",
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+pix2tex = ["pix2tex>=0.1.0"]
+qwen = [
+    "torch>=2.1",
+    "transformers>=4.50",
+    "accelerate",
+]
+debug = ["opencv-python>=4.8"]
+all = ["docberry[pix2tex,qwen,debug]"]
+
+[project.scripts]
+docberry = "docberry.cli:main"
+
+[project.urls]
+Homepage = "https://aj-das-research.github.io/docberry/"
+Repository = "https://github.com/aj-das-research/docberry"
+
+[tool.setuptools.packages.find]
+where = ["."]

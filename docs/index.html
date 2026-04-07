@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocBerry — Scientific PDF to Structured Markdown</title>
+    <meta name="description" content="Extract structured Markdown, tables, figures, and equations from scientific PDFs with proper reading order.">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --berry: #7B3FA0;
+            --berry-deep: #5C2D82;
+            --berry-light: #9B5FC0;
+            --berry-glow: #C084FC;
+            --leaf: #00A651;
+            --leaf-dark: #006837;
+            --leaf-light: #34D399;
+            --bg: #0B0614;
+            --bg-card: #130D1F;
+            --bg-card-hover: #1A1230;
+            --surface: #1E1535;
+            --text: #E8E0F0;
+            --text-muted: #9B8FB5;
+            --text-dim: #6B5F80;
+            --border: rgba(123, 63, 160, 0.2);
+            --border-glow: rgba(123, 63, 160, 0.4);
+            --code-bg: #110C1C;
+            --gradient-berry: linear-gradient(135deg, #7B3FA0, #C084FC);
+            --gradient-leaf: linear-gradient(135deg, #006837, #34D399);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* ---- Ambient background ---- */
+        .ambient {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .ambient::before {
+            content: '';
+            position: absolute;
+            top: -30%; left: -10%;
+            width: 60vw; height: 60vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(123,63,160,0.12) 0%, transparent 70%);
+            animation: float-1 20s ease-in-out infinite;
+        }
+        .ambient::after {
+            content: '';
+            position: absolute;
+            bottom: -20%; right: -10%;
+            width: 50vw; height: 50vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,166,81,0.08) 0%, transparent 70%);
+            animation: float-2 25s ease-in-out infinite;
+        }
+        @keyframes float-1 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(5vw, 3vh); }
+        }
+        @keyframes float-2 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-4vw, -5vh); }
+        }
+
+        /* ---- Layout ---- */
+        .container {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ---- Nav ---- */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px) saturate(1.4);
+            -webkit-backdrop-filter: blur(20px) saturate(1.4);
+            background: rgba(11, 6, 20, 0.75);
+            border-bottom: 1px solid var(--border);
+        }
+        nav .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        .nav-brand img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            list-style: none;
+        }
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--berry-glow); }
+        .nav-links .btn-sm {
+            background: var(--berry);
+            color: #fff;
+            padding: 0.4rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .nav-links .btn-sm:hover {
+            background: var(--berry-light);
+            transform: translateY(-1px);
+        }
+
+        /* ---- Hero ---- */
+        .hero {
+            padding: 10rem 0 6rem;
+            text-align: center;
+        }
+        .hero-logo {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            margin-bottom: 2rem;
+            filter: drop-shadow(0 0 60px rgba(123,63,160,0.35));
+            animation: logo-entrance 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        @keyframes logo-entrance {
+            from { opacity: 0; transform: translateY(30px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .hero h1 {
+            font-size: clamp(2.5rem, 5.5vw, 4.2rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin-bottom: 1.25rem;
+            animation: fade-up 0.8s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .hero h1 .highlight {
+            background: var(--gradient-berry);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero .tagline {
+            font-size: clamp(1.05rem, 2vw, 1.3rem);
+            color: var(--text-muted);
+            max-width: 640px;
+            margin: 0 auto 2.5rem;
+            animation: fade-up 0.8s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes fade-up {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+            animation: fade-up 0.8s 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.75rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            border: none;
+        }
+        .btn-primary {
+            background: var(--berry);
+            color: #fff;
+            box-shadow: 0 4px 24px rgba(123,63,160,0.35);
+        }
+        .btn-primary:hover {
+            background: var(--berry-light);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(123,63,160,0.45);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 1.5px solid var(--border-glow);
+        }
+        .btn-outline:hover {
+            border-color: var(--berry-light);
+            background: rgba(123,63,160,0.08);
+            transform: translateY(-2px);
+        }
+
+        /* Install snippet */
+        .install-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.85rem 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            color: var(--berry-glow);
+            margin-bottom: 1rem;
+            animation: fade-up 0.8s 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+        .install-box:hover {
+            border-color: var(--berry-light);
+            box-shadow: 0 0 20px rgba(123,63,160,0.15);
+        }
+        .install-box .prompt { color: var(--leaf-light); }
+        .install-box .copy-icon {
+            color: var(--text-dim);
+            transition: color 0.2s;
+        }
+        .install-box:hover .copy-icon { color: var(--text-muted); }
+        .install-box .tooltip {
+            position: absolute;
+            top: -32px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--berry);
+            color: #fff;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .install-box .tooltip.show { opacity: 1; }
+
+        /* ---- Features ---- */
+        .section { padding: 5rem 0; }
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--leaf-light);
+            margin-bottom: 0.75rem;
+        }
+        .section h2 {
+            font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            margin-bottom: 1rem;
+        }
+        .section .section-desc {
+            color: var(--text-muted);
+            max-width: 560px;
+            font-size: 1.05rem;
+            margin-bottom: 3rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.25rem;
+        }
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--gradient-berry);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .feature-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-glow);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+        .feature-card:hover::before { opacity: 1; }
+        .feature-icon {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        .feature-card h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
+        /* ---- Pipeline visual ---- */
+        .pipeline-section { padding: 5rem 0; }
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+        .pipeline-step {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem 2rem;
+            text-align: center;
+            min-width: 160px;
+            transition: all 0.3s;
+        }
+        .pipeline-step:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-3px);
+        }
+        .pipeline-step .step-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .pipeline-step .step-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+        }
+        .pipeline-step .step-sub {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+        }
+        .pipeline-arrow {
+            font-size: 1.3rem;
+            color: var(--text-dim);
+            padding: 0 0.6rem;
+        }
+
+        /* ---- Code examples ---- */
+        .code-section { padding: 5rem 0; }
+        .code-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 0;
+        }
+        .code-tab {
+            padding: 0.6rem 1.5rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            border-radius: 10px 10px 0 0;
+            color: var(--text-muted);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .code-tab.active {
+            background: var(--code-bg);
+            color: var(--berry-glow);
+            border-color: var(--border-glow);
+        }
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 0 12px 12px 12px;
+            padding: 1.75rem 2rem;
+            overflow-x: auto;
+            display: none;
+        }
+        .code-block.active { display: block; }
+        .code-block pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.75;
+            color: var(--text);
+            white-space: pre;
+        }
+        .code-block .kw { color: var(--berry-glow); }
+        .code-block .fn { color: var(--leaf-light); }
+        .code-block .str { color: #F9A826; }
+        .code-block .cmt { color: var(--text-dim); font-style: italic; }
+        .code-block .op { color: var(--text-muted); }
+
+        /* ---- Enrichment table ---- */
+        .enrichment-section { padding: 5rem 0; }
+        .enrichment-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .enrichment-table th {
+            background: var(--surface);
+            padding: 1rem 1.25rem;
+            text-align: left;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+        .enrichment-table td {
+            padding: 0.9rem 1.25rem;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+        .enrichment-table tr:last-child td { border-bottom: none; }
+        .enrichment-table tr:hover td { background: rgba(123,63,160,0.04); }
+        .enrichment-table .method-name {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--berry-glow);
+            font-size: 0.85rem;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.15rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-fast { background: rgba(52,211,153,0.15); color: var(--leaf-light); }
+        .badge-med { background: rgba(249,168,38,0.15); color: #F9A826; }
+        .badge-slow { background: rgba(239,68,68,0.15); color: #F87171; }
+
+        /* ---- Output structure ---- */
+        .output-section { padding: 5rem 0; }
+        .output-tree {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 2rem 2.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 2;
+            color: var(--text-muted);
+            max-width: 480px;
+        }
+        .output-tree .dir { color: var(--berry-glow); font-weight: 600; }
+        .output-tree .file { color: var(--text-muted); }
+        .output-tree .ext-md { color: var(--leaf-light); }
+        .output-tree .ext-img { color: #F9A826; }
+        .output-tree .ext-csv { color: #60A5FA; }
+        .output-tree .ext-tex { color: var(--berry-light); }
+
+        /* ---- Footer ---- */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 3rem 0;
+            margin-top: 3rem;
+        }
+        footer .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .footer-brand img { width: 24px; height: 24px; }
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+        .footer-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover { color: var(--berry-glow); }
+        .footer-ack {
+            width: 100%;
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+        .footer-ack a {
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+        .footer-ack a:hover { color: var(--berry-glow); }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 768px) {
+            .nav-links { gap: 1rem; }
+            .hero { padding: 8rem 0 4rem; }
+            .hero-logo { width: 90px; height: 90px; }
+            .features-grid { grid-template-columns: 1fr; }
+            .pipeline { flex-direction: column; gap: 0.5rem; }
+            .pipeline-arrow { transform: rotate(90deg); }
+            .code-block { padding: 1.25rem; }
+            .output-tree { padding: 1.25rem; }
+        }
+
+        /* ---- Scroll animations ---- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+<div class="ambient"></div>
+
+<!-- ============ NAV ============ -->
+<nav>
+    <div class="container">
+        <a class="nav-brand" href="#">
+            <img src="assets/logo.png" alt="DocBerry">
+            DocBerry
+        </a>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#quickstart">Quick Start</a></li>
+            <li><a href="#enrichment">Enrichment</a></li>
+            <li><a href="https://github.com/aj-das-research/docberry" class="btn-sm">GitHub</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+    <div class="container">
+        <img src="assets/logo.png" alt="DocBerry" class="hero-logo">
+        <h1>Scientific PDFs to<br><span class="highlight">structured Markdown</span></h1>
+        <p class="tagline">
+            Extract tables, figures, and equations from academic papers with
+            proper reading order &mdash; powered by Docling, enhanced with
+            multi-column segmentation and pluggable equation enrichment.
+        </p>
+        <div class="install-box" onclick="copyInstall(this)">
+            <span class="prompt">$</span>
+            <span>pip install docberry</span>
+            <svg class="copy-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            <span class="tooltip">Copied!</span>
+        </div>
+        <div class="hero-actions">
+            <a href="#quickstart" class="btn btn-primary">Get Started</a>
+            <a href="https://github.com/aj-das-research/docberry" class="btn btn-outline">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                View on GitHub
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ============ PIPELINE ============ -->
+<section class="pipeline-section reveal">
+    <div class="container" style="text-align:center;">
+        <div class="section-label">How It Works</div>
+        <h2>Two-stage pipeline</h2>
+        <p class="section-desc" style="margin:0 auto 2.5rem;">
+            DocBerry first segments multi-column layouts into reading order,
+            then converts to Markdown with full asset extraction.
+        </p>
+        <div class="pipeline">
+            <div class="pipeline-step">
+                <div class="step-icon">📄</div>
+                <div class="step-label">PDF Input</div>
+                <div class="step-sub">Any scientific paper</div>
+            </div>
+            <div class="pipeline-arrow">&#8594;</div>
+            <div class="pipeline-step">
+                <div class="step-icon">🔀</div>
+                <div class="step-label">Segment</div>
+                <div class="step-sub">Fix reading order</div>
+            </div>
+            <div class="pipeline-arrow">&#8594;</div>
+            <div class="pipeline-step">
+                <div class="step-icon">🔍</div>
+                <div class="step-label">Convert</div>
+                <div class="step-sub">Docling engine</div>
+            </div>
+            <div class="pipeline-arrow">&#8594;</div>
+            <div class="pipeline-step">
+                <div class="step-icon">📦</div>
+                <div class="step-label">Output</div>
+                <div class="step-sub">MD + Tables + Figs + Eqs</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section id="features" class="section reveal">
+    <div class="container">
+        <div class="section-label">Capabilities</div>
+        <h2>Everything you need</h2>
+        <p class="section-desc">
+            From two-column papers to complex equations &mdash; DocBerry handles it all.
+        </p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">🔀</span>
+                <h3>Reading Order Segmentation</h3>
+                <p>Automatically detects full-width headers, two-column body text, and spanning figures/tables. Reorders into natural reading sequence.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">📊</span>
+                <h3>Table Extraction</h3>
+                <p>Tables saved as high-DPI images (PNG, PDF, SVG) plus CSV. Markdown tables replaced with hyperlinked images for easy verification.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🖼️</span>
+                <h3>Figure Extraction</h3>
+                <p>Figures extracted at 900 DPI in multiple formats with captions. Adjacent sub-figures intelligently merged into single assets.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">📐</span>
+                <h3>Equation Enrichment</h3>
+                <p>Four backends: none, pix2tex (fast), Qwen VLM (accurate), or Docling CodeFormulaV2. Equations saved as images with LaTeX text.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">⚡</span>
+                <h3>One-Shot Pipeline</h3>
+                <p>Use <code>auto_segment=True</code> to segment and convert in a single call. Or run each stage independently for full control.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🧩</span>
+                <h3>Modular Extras</h3>
+                <p>Install only what you need. Core is lightweight; pix2tex and Qwen are optional extras. Models auto-download on first use.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ QUICKSTART ============ -->
+<section id="quickstart" class="code-section reveal">
+    <div class="container">
+        <div class="section-label">Quick Start</div>
+        <h2>Up and running in seconds</h2>
+        <p class="section-desc">Use the Python API or the CLI &mdash; your choice.</p>
+
+        <div class="code-tabs">
+            <button class="code-tab active" onclick="switchTab('python')">Python</button>
+            <button class="code-tab" onclick="switchTab('cli')">CLI</button>
+            <button class="code-tab" onclick="switchTab('install')">Install</button>
+        </div>
+
+        <div id="tab-python" class="code-block active">
+<pre><span class="kw">from</span> docberry <span class="kw">import</span> <span class="fn">segment_pdf</span>, <span class="fn">convert_document</span>
+
+<span class="cmt"># One-shot: segment + convert in a single call</span>
+result = <span class="fn">convert_document</span>(
+    <span class="str">"paper.pdf"</span>,
+    output_dir=<span class="str">"output/"</span>,
+    extract_assets=<span class="kw">True</span>,
+    auto_segment=<span class="kw">True</span>,
+    equation_enrichment=<span class="str">"pix2tex"</span>,
+)
+
+<span class="fn">print</span>(result.markdown_path)    <span class="cmt"># output/paper.md</span>
+<span class="fn">print</span>(result.tables)           <span class="cmt"># 5</span>
+<span class="fn">print</span>(result.figures)          <span class="cmt"># 8</span>
+<span class="fn">print</span>(result.equations)        <span class="cmt"># 12</span>
+<span class="fn">print</span>(result.elapsed_seconds)  <span class="cmt"># 42.3</span></pre>
+        </div>
+
+        <div id="tab-cli" class="code-block">
+<pre><span class="cmt"># Full pipeline (segment + convert)</span>
+<span class="prompt">$</span> docberry convert paper.pdf <span class="op">-o</span> output/ <span class="op">--extract-assets --auto-segment</span>
+
+<span class="cmt"># With equation enrichment</span>
+<span class="prompt">$</span> docberry convert paper.pdf <span class="op">-o</span> output/ <span class="op">--extract-assets \
+    --equation-enrichment</span> pix2tex
+
+<span class="cmt"># Segment only (for inspection)</span>
+<span class="prompt">$</span> docberry segment paper.pdf <span class="op">-o</span> paper_segmented.pdf <span class="op">--debug-dir</span> overlays/
+
+<span class="cmt"># Pre-download all model weights</span>
+<span class="prompt">$</span> docberry download-models <span class="op">--all</span></pre>
+        </div>
+
+        <div id="tab-install" class="code-block">
+<pre><span class="cmt"># Core (segmentation + conversion + asset extraction)</span>
+<span class="prompt">$</span> pip install docberry
+
+<span class="cmt"># With lightweight equation LaTeX OCR</span>
+<span class="prompt">$</span> pip install <span class="str">'docberry[pix2tex]'</span>
+
+<span class="cmt"># With Qwen VLM equation enrichment</span>
+<span class="prompt">$</span> pip install <span class="str">'docberry[qwen]'</span>
+
+<span class="cmt"># Everything</span>
+<span class="prompt">$</span> pip install <span class="str">'docberry[all]'</span></pre>
+        </div>
+    </div>
+</section>
+
+<!-- ============ ENRICHMENT TABLE ============ -->
+<section id="enrichment" class="enrichment-section reveal">
+    <div class="container">
+        <div class="section-label">Comparison</div>
+        <h2>Equation enrichment backends</h2>
+        <p class="section-desc">Choose the right trade-off between speed, quality, and model size.</p>
+
+        <table class="enrichment-table">
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Speed</th>
+                    <th>Quality</th>
+                    <th>Model Size</th>
+                    <th>Install Extra</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="method-name">none</td>
+                    <td>&mdash;</td>
+                    <td>Images only (no LaTeX)</td>
+                    <td>&mdash;</td>
+                    <td>&mdash;</td>
+                </tr>
+                <tr>
+                    <td class="method-name">pix2tex</td>
+                    <td><span class="badge badge-fast">Fast ~1s/eq</span></td>
+                    <td>Good for simple equations</td>
+                    <td>~100 MB</td>
+                    <td><code>docberry[pix2tex]</code></td>
+                </tr>
+                <tr>
+                    <td class="method-name">qwen</td>
+                    <td><span class="badge badge-med">Medium ~3s/eq</span></td>
+                    <td>Good, handles complex notation</td>
+                    <td>~1.6 GB</td>
+                    <td><code>docberry[qwen]</code></td>
+                </tr>
+                <tr>
+                    <td class="method-name">docling</td>
+                    <td><span class="badge badge-slow">Slow ~5s/eq</span></td>
+                    <td>High (CodeFormulaV2 VLM)</td>
+                    <td>~2 GB</td>
+                    <td>Built-in</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- ============ OUTPUT STRUCTURE ============ -->
+<section class="output-section reveal">
+    <div class="container" style="display:flex;gap:4rem;align-items:center;flex-wrap:wrap;">
+        <div style="flex:1;min-width:280px;">
+            <div class="section-label">Output</div>
+            <h2>Clean, organized results</h2>
+            <p class="section-desc" style="margin-bottom:1.5rem;">
+                Every table, figure, and equation is saved in multiple formats
+                with captions and LaTeX text. The Markdown links directly to each asset.
+            </p>
+            <p style="color:var(--text-muted);font-size:0.92rem;">
+                PNG + PDF + SVG for every image asset.<br>
+                CSV for tables. LaTeX <code>.txt</code> for equations.<br>
+                Captions preserved alongside each asset.
+            </p>
+        </div>
+        <div class="output-tree" style="flex:0 0 auto;">
+            <span class="dir">output/</span><br>
+            &nbsp;&nbsp;<span class="ext-md">paper.md</span><br>
+            &nbsp;&nbsp;<span class="dir">tables/</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="ext-img">table-1.png</span> / .pdf / .svg<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="ext-csv">table-1.csv</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">table-1_caption.txt</span><br>
+            &nbsp;&nbsp;<span class="dir">figures/</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="ext-img">figure-1.png</span> / .pdf / .svg<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">figure-1_caption.txt</span><br>
+            &nbsp;&nbsp;<span class="dir">equations/</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="ext-img">equation-1.png</span> / .pdf / .svg<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="ext-tex">equation-1_latex.txt</span>
+        </div>
+    </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+    <div class="container">
+        <div class="footer-brand">
+            <img src="assets/logo.png" alt="DocBerry">
+            <span>DocBerry v0.1.0</span>
+        </div>
+        <ul class="footer-links">
+            <li><a href="https://github.com/aj-das-research/docberry">GitHub</a></li>
+            <li><a href="https://github.com/aj-das-research/docberry">PyPI</a></li>
+            <li><a href="https://github.com/aj-das-research/docberry/blob/main/LICENSE">MIT License</a></li>
+        </ul>
+        <div class="footer-ack">
+            Built on <a href="https://github.com/DS4SD/docling">Docling</a> &middot;
+            Equation OCR by <a href="https://github.com/lukas-blecher/LaTeX-OCR">pix2tex</a> &amp;
+            <a href="https://github.com/QwenLM/Qwen">Qwen</a> &middot;
+            PDF processing by <a href="https://pymupdf.readthedocs.io/">PyMuPDF</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+function copyInstall(el) {
+    navigator.clipboard.writeText('pip install docberry');
+    const tip = el.querySelector('.tooltip');
+    tip.classList.add('show');
+    setTimeout(() => tip.classList.remove('show'), 1500);
+}
+
+function switchTab(name) {
+    document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.code-block').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
