@@ -353,6 +353,99 @@
             line-height: 1.6;
         }
 
+        /* ---- Showcase ---- */
+        .showcase {
+            padding: 5rem 0;
+        }
+        .showcase-item {
+            display: flex;
+            align-items: center;
+            gap: 3.5rem;
+            margin-bottom: 5rem;
+        }
+        .showcase-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+        .showcase-item:last-child { margin-bottom: 0; }
+        .showcase-text {
+            flex: 1;
+            min-width: 260px;
+        }
+        .showcase-text .showcase-tag {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+        }
+        .tag-segment { background: rgba(52,211,153,0.12); color: var(--leaf-light); }
+        .tag-table { background: rgba(96,165,250,0.12); color: #60A5FA; }
+        .tag-figure { background: rgba(249,168,38,0.12); color: #F9A826; }
+        .tag-equation { background: rgba(192,132,252,0.12); color: var(--berry-glow); }
+        .showcase-text h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+            letter-spacing: -0.02em;
+        }
+        .showcase-text p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        .showcase-image {
+            flex: 1.2;
+            min-width: 300px;
+            position: relative;
+        }
+        .showcase-image img {
+            width: 100%;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: #fff;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px var(--border);
+            transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s;
+        }
+        .showcase-image:hover img {
+            transform: scale(1.02) translateY(-4px);
+            box-shadow: 0 16px 60px rgba(123,63,160,0.25), 0 0 0 1px var(--border-glow);
+        }
+        .showcase-image .img-label {
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.3rem 0.9rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .eq-showcase {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .eq-showcase img {
+            flex: 1;
+            min-width: 180px;
+            max-width: 48%;
+        }
+        @media (max-width: 768px) {
+            .showcase-item, .showcase-item:nth-child(even) {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            .showcase-image { min-width: unset; width: 100%; }
+            .eq-showcase img { max-width: 100%; }
+        }
+
         /* ---- Pipeline visual ---- */
         .pipeline-section { padding: 5rem 0; }
         .pipeline {
@@ -659,35 +752,100 @@
     </div>
 </section>
 
-<!-- ============ FEATURES ============ -->
-<section id="features" class="section reveal">
+<!-- ============ FEATURES SHOWCASE ============ -->
+<section id="features" class="showcase">
     <div class="container">
-        <div class="section-label">Capabilities</div>
-        <h2>Everything you need</h2>
-        <p class="section-desc">
-            From two-column papers to complex equations &mdash; DocBerry handles it all.
-        </p>
+        <div style="text-align:center;margin-bottom:4rem;" class="reveal">
+            <div class="section-label">Capabilities</div>
+            <h2>See it in action</h2>
+            <p class="section-desc" style="margin:0 auto;">
+                Real outputs from a scientific paper processed by DocBerry.
+            </p>
+        </div>
+
+        <!-- Segmentation -->
+        <div class="showcase-item reveal">
+            <div class="showcase-text">
+                <span class="showcase-tag tag-segment">Segmentation</span>
+                <h3>Reading Order Detection</h3>
+                <p>
+                    DocBerry analyzes each page and detects full-width regions
+                    (title, abstract, figures) and two-column body text.
+                    Color-coded segments show the detected layout: <span style="color:#4ade80;">green</span> for
+                    full-width, <span style="color:#fb923c;">orange</span> for left column,
+                    <span style="color:#60a5fa;">blue</span> for right column.
+                    The segments are reordered into the natural reading sequence
+                    before conversion.
+                </p>
+            </div>
+            <div class="showcase-image">
+                <img src="assets/example-segmentation.png" alt="Page segmentation showing detected layout regions" loading="lazy">
+                <span class="img-label">Page 1 &mdash; Title + two-column body detected</span>
+            </div>
+        </div>
+
+        <!-- Tables -->
+        <div class="showcase-item reveal">
+            <div class="showcase-text">
+                <span class="showcase-tag tag-table">Table Extraction</span>
+                <h3>High-Fidelity Tables</h3>
+                <p>
+                    Every table is extracted as a high-DPI image (900 DPI) in PNG, PDF,
+                    and SVG formats, plus a structured CSV. The Markdown output replaces
+                    pipe-delimited tables with image hyperlinks so you can always verify
+                    the extraction against the original rendering.
+                </p>
+            </div>
+            <div class="showcase-image">
+                <img src="assets/example-table.png" alt="Extracted table at 900 DPI" loading="lazy">
+                <span class="img-label">Table 1 &mdash; Extracted at 900 DPI with CSV + caption</span>
+            </div>
+        </div>
+
+        <!-- Figures -->
+        <div class="showcase-item reveal">
+            <div class="showcase-text">
+                <span class="showcase-tag tag-figure">Figure Extraction</span>
+                <h3>Figures with Captions</h3>
+                <p>
+                    Figures are extracted with their captions preserved alongside.
+                    Sub-figures that span multiple panels are intelligently merged
+                    into a single composite asset. Complex multi-panel figures
+                    with embedded charts and confusion matrices are captured faithfully.
+                </p>
+            </div>
+            <div class="showcase-image">
+                <img src="assets/example-figure.png" alt="Extracted multi-panel figure" loading="lazy">
+                <span class="img-label">Figure 2 &mdash; Pipeline diagram extracted with full fidelity</span>
+            </div>
+        </div>
+
+        <!-- Equations -->
+        <div class="showcase-item reveal">
+            <div class="showcase-text">
+                <span class="showcase-tag tag-equation">Equation Enrichment</span>
+                <h3>Equations to LaTeX</h3>
+                <p>
+                    Every equation is saved as a high-DPI image and optionally
+                    converted to LaTeX using one of four backends.
+                    The Markdown output includes both the LaTeX block and an
+                    image reference so you can visually verify each equation.
+                </p>
+            </div>
+            <div class="showcase-image">
+                <div class="eq-showcase">
+                    <img src="assets/example-equation.png" alt="Extracted equation 1" loading="lazy">
+                </div>
+                <span class="img-label">Equation 1 &mdash; Saved as image + LaTeX text file</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ FEATURE CARDS ============ -->
+<section class="section reveal">
+    <div class="container">
         <div class="features-grid">
-            <div class="feature-card">
-                <span class="feature-icon">🔀</span>
-                <h3>Reading Order Segmentation</h3>
-                <p>Automatically detects full-width headers, two-column body text, and spanning figures/tables. Reorders into natural reading sequence.</p>
-            </div>
-            <div class="feature-card">
-                <span class="feature-icon">📊</span>
-                <h3>Table Extraction</h3>
-                <p>Tables saved as high-DPI images (PNG, PDF, SVG) plus CSV. Markdown tables replaced with hyperlinked images for easy verification.</p>
-            </div>
-            <div class="feature-card">
-                <span class="feature-icon">🖼️</span>
-                <h3>Figure Extraction</h3>
-                <p>Figures extracted at 900 DPI in multiple formats with captions. Adjacent sub-figures intelligently merged into single assets.</p>
-            </div>
-            <div class="feature-card">
-                <span class="feature-icon">📐</span>
-                <h3>Equation Enrichment</h3>
-                <p>Four backends: none, pix2tex (fast), Qwen VLM (accurate), or Docling CodeFormulaV2. Equations saved as images with LaTeX text.</p>
-            </div>
             <div class="feature-card">
                 <span class="feature-icon">⚡</span>
                 <h3>One-Shot Pipeline</h3>
@@ -697,6 +855,11 @@
                 <span class="feature-icon">🧩</span>
                 <h3>Modular Extras</h3>
                 <p>Install only what you need. Core is lightweight; pix2tex and Qwen are optional extras. Models auto-download on first use.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">📄</span>
+                <h3>Multi-Format Output</h3>
+                <p>Every asset in PNG + PDF + SVG. Tables also get CSV. Equations get LaTeX <code>.txt</code> files. Captions preserved for all assets.</p>
             </div>
         </div>
     </div>
