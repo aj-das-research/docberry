@@ -4,6 +4,12 @@
 [![Python](https://img.shields.io/pypi/pyversions/docberry?color=34D399)](https://pypi.org/project/docberry/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
+<p align="center">
+  <a href="https://aj-das-research.github.io/docberry/">
+    <img src="https://img.shields.io/badge/%F0%9F%8C%90_Website-aj--das--research.github.io%2Fdocberry-7B3FA0?style=for-the-badge" alt="Website">
+  </a>
+</p>
+
 Extract structured Markdown, tables, figures, and equations from scientific PDFs with proper reading order.
 
 <p align="center">
