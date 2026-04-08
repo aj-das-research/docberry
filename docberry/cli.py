@@ -228,7 +228,7 @@ def _get_version() -> str:
         from docberry import __version__
         return __version__
     except ImportError:
-        return "0.1.0"
+        return "0.1.1"
 
 
 if __name__ == "__main__":

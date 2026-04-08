@@ -19,7 +19,7 @@ Quick start::
     print(result.markdown_path, result.tables, result.figures, result.equations)
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 from docberry.segmenter import segment_pdf, LayoutConfig
 from docberry.converter import convert_document, ConversionResult

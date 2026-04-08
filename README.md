@@ -7,7 +7,7 @@
 Extract structured Markdown, tables, figures, and equations from scientific PDFs with proper reading order.
 
 <p align="center">
-  <img src="docs/assets/image.png" alt="DocBerry Pipeline" width="800">
+  <img src="https://raw.githubusercontent.com/aj-das-research/docberry/main/docs/assets/image.png" alt="DocBerry Pipeline" width="800">
 </p>
 
 DocBerry wraps [Docling](https://github.com/DS4SD/docling) with a reading-order segmentation layer for two-column academic papers, multi-format asset extraction (PNG/PDF/SVG), and pluggable equation LaTeX enrichment backends.
