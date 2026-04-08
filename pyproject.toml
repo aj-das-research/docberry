@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "Extract structured Markdown, tables, figures, and equations from scientific PDFs with proper reading order."
 requires-python = ">=3.10"
 license = { text = "MIT" }
+readme = "README.md"
 authors = [{ name = "DocBerry Contributors" }]
 keywords = ["pdf", "markdown", "scientific-papers", "table-extraction", "equation-extraction", "docling"]
 classifiers = [
@@ -47,6 +48,7 @@ docberry = "docberry.cli:main"
 [project.urls]
 Homepage = "https://aj-das-research.github.io/docberry/"
 Repository = "https://github.com/aj-das-research/docberry"
+PyPI = "https://pypi.org/project/docberry/"
 
 [tool.setuptools.packages.find]
 where = ["."]

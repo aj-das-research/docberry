@@ -23,6 +23,9 @@ env/
 .DS_Store
 Thumbs.db
 
+# MkDocs / build artifacts
+site/
+
 # Test outputs
 debug_overlays*/
 *_output/

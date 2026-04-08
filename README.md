@@ -1,6 +1,14 @@
 # DocBerry
 
+[![PyPI](https://img.shields.io/pypi/v/docberry?color=7B3FA0)](https://pypi.org/project/docberry/)
+[![Python](https://img.shields.io/pypi/pyversions/docberry?color=34D399)](https://pypi.org/project/docberry/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Extract structured Markdown, tables, figures, and equations from scientific PDFs with proper reading order.
+
+<p align="center">
+  <img src="docs/assets/image.png" alt="DocBerry Pipeline" width="800">
+</p>
 
 DocBerry wraps [Docling](https://github.com/DS4SD/docling) with a reading-order segmentation layer for two-column academic papers, multi-format asset extraction (PNG/PDF/SVG), and pluggable equation LaTeX enrichment backends.
 
@@ -231,4 +239,4 @@ MIT — see [LICENSE](LICENSE).
 
 ---
 
-**[Website](https://aj-das-research.github.io/docberry/)** | **[GitHub](https://github.com/aj-das-research/docberry)**
+**[Website](https://aj-das-research.github.io/docberry/)** | **[PyPI](https://pypi.org/project/docberry/)** | **[GitHub](https://github.com/aj-das-research/docberry)**
